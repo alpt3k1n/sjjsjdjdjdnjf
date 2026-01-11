@@ -16,11 +16,13 @@ MedMind, tıp öğrencileri için geliştirilmiş modern bir **ilişkisel öğre
 - Dark mode optimized
 - Mobil uyumlu responsive tasarım
 
-### 🤖 Claude AI Entegrasyonu
-- Anthropic Claude 3.5 Sonnet ile güçlendirilmiş
+### 🤖 DeepSeek AI Entegrasyonu
+- DeepSeek-V3 ile güçlendirilmiş (son derece uygun maliyetli!)
+- Güvenli serverless backend (Vercel Functions)
 - Her arama için dinamik olarak ilişkisel içerik üretimi
 - Klinik ipuçları ve mnemonikler
 - Otomatik soru oluşturma
+- API key'i frontend'de expose olmaz (güvenli!)
 
 ### 📚 Öğrenme Modları
 - **Quiz Modu**: İnteraktif çoktan seçmeli sorular
@@ -32,9 +34,29 @@ MedMind, tıp öğrencileri için geliştirilmiş modern bir **ilişkisel öğre
 ### Gereksinimler
 - Node.js 18+
 - npm veya yarn
-- Anthropic API anahtarı
+- DeepSeek API anahtarı (ücretsiz tier: $5 kredi)
+- Vercel hesabı (ücretsiz)
 
-### Adımlar
+### Hızlı Deploy (Önerilen - 5 dakika!)
+
+**Canlıya almak için en kolay yol:**
+
+1. **Vercel'e Deploy Et**
+   - [vercel.com](https://vercel.com) → GitHub ile giriş yap
+   - "New Project" → Bu repoyu seç → Import
+   - Environment Variable ekle: `DEEPSEEK_API_KEY`
+   - Deploy! ✨
+
+2. **DeepSeek API Key Al**
+   - [platform.deepseek.com](https://platform.deepseek.com) → Hesap oluştur
+   - API Keys → Create API Key
+   - Key'i kopyala → Vercel'de Environment Variables'a ekle
+
+3. **Redeploy yap ve hazır!**
+
+📖 Detaylı deployment talimatları için: [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+### Local Development
 
 1. **Depoyu klonlayın**
 ```bash
@@ -47,52 +69,51 @@ cd sjjsjdjdjdnjf
 npm install
 ```
 
-3. **Environment variables ayarlayın**
-```bash
-cp .env.example .env
-```
-
-`.env` dosyasını açın ve API anahtarınızı ekleyin:
-```env
-VITE_ANTHROPIC_API_KEY=your_actual_api_key_here
-```
-
-API anahtarı almak için: [https://console.anthropic.com/](https://console.anthropic.com/)
-
-4. **Geliştirme sunucusunu başlatın**
+3. **Development server başlatın**
 ```bash
 npm run dev
 ```
 
-Uygulama `http://localhost:5173` adresinde çalışacaktır.
+**NOT:** Local'de serverless function çalışmaz, mock data gösterilir.
+
+**Serverless functions ile test için:**
+```bash
+npm install -g vercel
+vercel dev
+```
 
 ## 📁 Proje Yapısı
 
 ```
-src/
-├── components/
-│   ├── ui/                 # Temel UI bileşenleri
-│   │   ├── GlassCard.tsx
-│   │   ├── SearchBar.tsx
-│   │   ├── Button.tsx
-│   │   ├── CategoryChip.tsx
-│   │   └── LoadingSpinner.tsx
-│   ├── search/             # Arama sayfası bileşenleri
-│   │   ├── CategorySection.tsx
-│   │   └── RelatedItemCard.tsx
-│   └── quiz/               # Quiz ve flashcard bileşenleri
-│       ├── QuizCard.tsx
-│       └── FlashCard.tsx
-├── pages/
-│   ├── Home.tsx            # Ana sayfa
-│   └── Search.tsx          # Arama sonuçları sayfası
-├── services/
-│   └── claudeService.ts    # Claude API entegrasyonu
-├── types/
-│   └── index.ts            # TypeScript type tanımları
-├── App.tsx                 # Ana uygulama ve router
-├── index.css               # Global stiller ve glassmorphism
-└── main.tsx                # Giriş noktası
+├── api/                         # 🔒 Serverless Functions (Backend)
+│   └── search-topic.ts          # DeepSeek API endpoint (güvenli!)
+├── src/                         # Frontend
+│   ├── components/
+│   │   ├── ui/                  # Temel UI bileşenleri
+│   │   │   ├── GlassCard.tsx
+│   │   │   ├── SearchBar.tsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── CategoryChip.tsx
+│   │   │   └── LoadingSpinner.tsx
+│   │   ├── search/              # Arama sayfası bileşenleri
+│   │   │   ├── CategorySection.tsx
+│   │   │   └── RelatedItemCard.tsx
+│   │   └── quiz/                # Quiz ve flashcard bileşenleri
+│   │       ├── QuizCard.tsx
+│   │       └── FlashCard.tsx
+│   ├── pages/
+│   │   ├── Home.tsx             # Ana sayfa
+│   │   └── Search.tsx           # Arama sonuçları sayfası
+│   ├── services/
+│   │   └── aiService.ts         # AI servisi (serverless function'a bağlanır)
+│   ├── types/
+│   │   └── index.ts             # TypeScript type tanımları
+│   ├── App.tsx                  # Ana uygulama ve router
+│   ├── index.css                # Global stiller ve glassmorphism
+│   └── main.tsx                 # Giriş noktası
+├── vercel.json                  # Vercel deployment config
+├── DEPLOYMENT.md                # 🚀 Deployment kılavuzu
+└── .env.example                 # Environment variables şablonu
 ```
 
 ## 🎯 Kullanım
@@ -112,14 +133,21 @@ src/
 
 ## 🛠 Teknoloji Stack
 
-- **Frontend Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + Custom Glassmorphism
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Routing**: React Router v6
-- **AI Service**: Anthropic Claude API
+- **Backend**: Vercel Serverless Functions
+- **AI Model**: DeepSeek-V3 (OpenAI-compatible API)
+- **Deployment**: Vercel (önerilen)
 - **State Management**: Zustand (hazır, henüz kullanılmıyor)
+
+### Neden DeepSeek?
+- ✅ **Uygun Maliyet**: Claude'un ~1/10 fiyatı ($0.27/1M input token)
+- ✅ **Güçlü Performans**: SOTA model (2024)
+- ✅ **OpenAI-Compatible API**: Kolay entegrasyon
+- ✅ **Ücretsiz Başlangıç**: İlk kayıtta $5 kredi
 
 ## 🎨 Tasarım Sistemi
 
@@ -137,19 +165,29 @@ src/
 
 ## 📝 Geliştirme Notları
 
-### Mock Data
-- API anahtarı yoksa veya Claude API'de hata oluşursa, otomatik olarak mock data kullanılır
-- Mock data `claudeService.ts` içinde tanımlıdır
+### 🔒 Güvenlik (ÇOK ÖNEMLİ!)
+- ✅ **API Key Güvenliği**: DeepSeek API key'i **sadece** serverless function'da (backend)
+- ✅ **Environment Variables**: `DEEPSEEK_API_KEY` (NOT: `VITE_` ile başlamıyor!)
+- ✅ **CORS Protection**: API endpoint'ler CORS ile korumalı
+- ✅ **No Client Exposure**: API key'i **asla** frontend koduna gömülü değil
+- ❌ **Eski yöntem**: `dangerouslyAllowBrowser` kullanmıyoruz (güvensiz!)
 
-### Güvenlik
-- **ÖNEMLİ**: `dangerouslyAllowBrowser: true` sadece demo amaçlıdır
-- Production'da API çağrıları **backend'den** yapılmalıdır
-- API anahtarlarını asla client-side'da expose etmeyin
+### Mock Data
+- API'ye erişilemezse otomatik olarak mock data kullanılır
+- Mock data `aiService.ts` içinde tanımlıdır
+- Development sırasında faydalı
 
 ### Performans
-- Lazy loading için React.lazy kullanımı planlanmıştır
-- Image optimization eklenecek
+- Serverless functions: Cold start ~1-2 saniye
+- DeepSeek API: ~3-5 saniye yanıt süresi
+- Lazy loading planlanmıştır
 - PWA desteği gelecek güncellemelerde
+
+### 💰 Maliyet Tahmini
+- Ortalama arama: ~$0.002 (2000 input + 1500 output token)
+- 100 arama: ~$0.20
+- 1000 arama: ~$2.00
+- Ücretsiz tier: $5 kredi (~2500 arama)
 
 ## 🚧 Gelecek Özellikler
 

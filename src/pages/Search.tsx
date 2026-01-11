@@ -14,7 +14,7 @@ import {
   Brain,
 } from 'lucide-react';
 import type { SearchResult, RelatedItem } from '../types';
-import { searchMedicalTopic } from '../services/claudeService';
+import { searchMedicalTopic } from '../services/aiService';
 import SearchBar from '../components/ui/SearchBar';
 import CategorySection from '../components/search/CategorySection';
 import GlassCard from '../components/ui/GlassCard';
