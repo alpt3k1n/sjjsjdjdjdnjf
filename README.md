@@ -16,8 +16,9 @@ MedMind, tıp öğrencileri için geliştirilmiş modern bir **ilişkisel öğre
 - Dark mode optimized
 - Mobil uyumlu responsive tasarım
 
-### 🤖 DeepSeek AI Entegrasyonu
-- DeepSeek-V3 ile güçlendirilmiş (son derece uygun maliyetli!)
+### 🤖 Groq AI Entegrasyonu
+- **Llama 3.3 70B** ile güçlendirilmiş (Meta'nın en son modeli!)
+- ⚡ **Süper hızlı inference**: ~300-500 token/saniye
 - Güvenli serverless backend (Vercel Functions)
 - Her arama için dinamik olarak ilişkisel içerik üretimi
 - Klinik ipuçları ve mnemonikler
@@ -34,7 +35,7 @@ MedMind, tıp öğrencileri için geliştirilmiş modern bir **ilişkisel öğre
 ### Gereksinimler
 - Node.js 18+
 - npm veya yarn
-- DeepSeek API anahtarı (ücretsiz tier: $5 kredi)
+- **Groq API anahtarı** (ücretsiz tier: günlük 14,400 requests!)
 - Vercel hesabı (ücretsiz)
 
 ### Hızlı Deploy (Önerilen - 5 dakika!)
@@ -44,11 +45,11 @@ MedMind, tıp öğrencileri için geliştirilmiş modern bir **ilişkisel öğre
 1. **Vercel'e Deploy Et**
    - [vercel.com](https://vercel.com) → GitHub ile giriş yap
    - "New Project" → Bu repoyu seç → Import
-   - Environment Variable ekle: `DEEPSEEK_API_KEY`
+   - Environment Variable ekle: `GROQ_API_KEY`
    - Deploy! ✨
 
-2. **DeepSeek API Key Al**
-   - [platform.deepseek.com](https://platform.deepseek.com) → Hesap oluştur
+2. **Groq API Key Al**
+   - [console.groq.com](https://console.groq.com) → Hesap oluştur
    - API Keys → Create API Key
    - Key'i kopyala → Vercel'de Environment Variables'a ekle
 
@@ -86,7 +87,7 @@ vercel dev
 
 ```
 ├── api/                         # 🔒 Serverless Functions (Backend)
-│   └── search-topic.ts          # DeepSeek API endpoint (güvenli!)
+│   └── search-topic.ts          # Groq API endpoint (güvenli!)
 ├── src/                         # Frontend
 │   ├── components/
 │   │   ├── ui/                  # Temel UI bileşenleri
@@ -139,15 +140,16 @@ vercel dev
 - **Icons**: Lucide React
 - **Routing**: React Router v6
 - **Backend**: Vercel Serverless Functions
-- **AI Model**: DeepSeek-V3 (OpenAI-compatible API)
+- **AI Model**: Llama 3.3 70B (Groq API)
 - **Deployment**: Vercel (önerilen)
 - **State Management**: Zustand (hazır, henüz kullanılmıyor)
 
-### Neden DeepSeek?
-- ✅ **Uygun Maliyet**: Claude'un ~1/10 fiyatı ($0.27/1M input token)
-- ✅ **Güçlü Performans**: SOTA model (2024)
-- ✅ **OpenAI-Compatible API**: Kolay entegrasyon
-- ✅ **Ücretsiz Başlangıç**: İlk kayıtta $5 kredi
+### Neden Groq + Llama 3.3?
+- ⚡ **Süper Hızlı**: ~300-500 token/saniye (en hızlı inference!)
+- 💪 **Güçlü Model**: Meta Llama 3.3 70B (SOTA performans)
+- 🆓 **Cömert Ücretsiz Tier**: Günlük 14,400 requests
+- 💰 **Uygun Fiyat**: $0.59/1M input token (ücretli tier)
+- 🔌 **OpenAI-Compatible API**: Kolay entegrasyon
 
 ## 🎨 Tasarım Sistemi
 
@@ -166,8 +168,8 @@ vercel dev
 ## 📝 Geliştirme Notları
 
 ### 🔒 Güvenlik (ÇOK ÖNEMLİ!)
-- ✅ **API Key Güvenliği**: DeepSeek API key'i **sadece** serverless function'da (backend)
-- ✅ **Environment Variables**: `DEEPSEEK_API_KEY` (NOT: `VITE_` ile başlamıyor!)
+- ✅ **API Key Güvenliği**: Groq API key'i **sadece** serverless function'da (backend)
+- ✅ **Environment Variables**: `GROQ_API_KEY` (NOT: `VITE_` ile başlamıyor!)
 - ✅ **CORS Protection**: API endpoint'ler CORS ile korumalı
 - ✅ **No Client Exposure**: API key'i **asla** frontend koduna gömülü değil
 - ❌ **Eski yöntem**: `dangerouslyAllowBrowser` kullanmıyoruz (güvensiz!)
@@ -179,15 +181,16 @@ vercel dev
 
 ### Performans
 - Serverless functions: Cold start ~1-2 saniye
-- DeepSeek API: ~3-5 saniye yanıt süresi
+- ⚡ **Groq API**: ~1-2 saniye yanıt süresi (çok hızlı!)
+- Inference hızı: ~300-500 token/saniye
 - Lazy loading planlanmıştır
 - PWA desteği gelecek güncellemelerde
 
-### 💰 Maliyet Tahmini
-- Ortalama arama: ~$0.002 (2000 input + 1500 output token)
-- 100 arama: ~$0.20
-- 1000 arama: ~$2.00
-- Ücretsiz tier: $5 kredi (~2500 arama)
+### 💰 Maliyet Tahmini (Ücretli Tier)
+- Ortalama arama: ~$0.003 (2000 input + 1500 output token)
+- 100 arama: ~$0.30
+- 1000 arama: ~$3.00
+- **Ücretsiz tier**: Günlük 14,400 requests (çoğu kullanıcı için yeterli!)
 
 ## 🚧 Gelecek Özellikler
 

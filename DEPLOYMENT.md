@@ -15,7 +15,7 @@
 4. **"Import"** tıkla
 5. Environment Variables ekle:
    ```
-   DEEPSEEK_API_KEY = your_actual_deepseek_key_here
+   GROQ_API_KEY = your_actual_groq_api_key_here
    ```
 6. **"Deploy"** tıkla
 7. 2-3 dakika bekle ✨
@@ -33,23 +33,23 @@ vercel login
 vercel
 
 # Environment variable ekle
-vercel env add DEEPSEEK_API_KEY
+vercel env add GROQ_API_KEY
 
 # Production deploy
 vercel --prod
 ```
 
-### 3. DeepSeek API Key Al
-1. [platform.deepseek.com](https://platform.deepseek.com) git
+### 3. Groq API Key Al
+1. [console.groq.com](https://console.groq.com) git
 2. Hesap oluştur / Giriş yap
-3. API Keys bölümüne git
+3. **API Keys** bölümüne git
 4. **"Create API Key"** tıkla
-5. Key'i kopyala ve güvenli bir yere kaydet
+5. Key'i kopyala ve güvenli bir yere kaydet (örn: `gsk_xxxxx...`)
 
 ### 4. Vercel'de Environment Variable Ayarla
 1. Vercel dashboard → Projen → Settings → Environment Variables
 2. Yeni değişken ekle:
-   - **Name:** `DEEPSEEK_API_KEY`
+   - **Name:** `GROQ_API_KEY`
    - **Value:** (kopyaladığın key)
    - **Environment:** Production, Preview, Development (hepsini seç)
 3. Save
@@ -74,7 +74,7 @@ nano .env
 
 `.env` içeriği:
 ```env
-DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxx
+GROQ_API_KEY=gsk_xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ### 2. Development Server
@@ -115,7 +115,7 @@ netlify login
 netlify deploy --prod
 
 # Environment variables
-netlify env:set DEEPSEEK_API_KEY your_key_here
+netlify env:set GROQ_API_KEY your_key_here
 ```
 
 `netlify.toml` dosyası ekle:
@@ -138,7 +138,7 @@ netlify env:set DEEPSEEK_API_KEY your_key_here
    - Build command: `npm run build`
    - Build output: `dist`
 4. Environment variables:
-   - `DEEPSEEK_API_KEY`
+   - `GROQ_API_KEY`
 5. Deploy
 
 **NOT:** Cloudflare Pages için serverless function'lar Workers formatında olmalı (farklı syntax).
@@ -152,7 +152,7 @@ netlify env:set DEEPSEEK_API_KEY your_key_here
 - [ ] API key'i Vercel Environment Variables'da
 - [ ] Environment variable adı `VITE_` ile başlamıyor (frontend'e leak olmaması için)
 - [ ] Serverless function CORS headers doğru ayarlanmış
-- [ ] Production'da API rate limiting düşün (DeepSeek API limitleri)
+- [ ] Production'da API rate limiting düşün (Groq ücretsiz tier: günlük 14,400 requests)
 
 ❌ **YAPILMAMASI GEREKENLER:**
 - API key'i **asla** frontend koduna yazma
@@ -161,18 +161,28 @@ netlify env:set DEEPSEEK_API_KEY your_key_here
 
 ---
 
-## 📊 DeepSeek API Fiyatlandırma
+## 📊 Groq API Fiyatlandırma
+
+### Ücretsiz Tier
+- **Günlük Limit**: 14,400 requests
+- **Rate Limit**: 30 requests/minute
+- **Model**: Llama 3.3 70B Versatile
+- **Maliyet**: $0 (tamamen ücretsiz!)
+
+### Ücretli Tier (Gerekirse)
 
 | Model | Input (1M token) | Output (1M token) |
 |-------|------------------|-------------------|
-| DeepSeek-V3 | $0.27 | $1.10 |
+| Llama 3.3 70B | $0.59 | $0.79 |
 
 **Örnek maliyet:**
 - Ortalama bir arama: ~2000 input + ~1500 output token
-- Maliyet: ~$0.00215 per arama
-- 1000 arama: ~$2.15
+- Maliyet: ~$0.003 per arama
+- 1000 arama: ~$3.00
 
-**Ücretsiz Tier:** İlk kayıtta genellikle $5 kredi veriliyor.
+**Hız:**
+- Inference: ~300-500 token/saniye
+- Toplam yanıt süresi: ~1-2 saniye (çok hızlı!)
 
 ---
 
@@ -181,7 +191,7 @@ netlify env:set DEEPSEEK_API_KEY your_key_here
 ### Sorun: "API key not configured"
 **Çözüm:**
 1. Vercel dashboard → Settings → Environment Variables
-2. `DEEPSEEK_API_KEY` eklenmiş mi kontrol et
+2. `GROQ_API_KEY` eklenmiş mi kontrol et
 3. Redeploy yap
 
 ### Sorun: CORS hatası
@@ -196,7 +206,14 @@ res.setHeader('Access-Control-Allow-Origin', 'https://your-domain.vercel.app');
 1. Browser console'u aç (F12)
 2. Network tab'ında `/api/search-topic` isteğini kontrol et
 3. Hata mesajını oku
-4. DeepSeek API key'i doğru mu kontrol et
+4. Groq API key'i doğru mu kontrol et
+5. Groq console'da rate limit aşılmış mı kontrol et
+
+### Sorun: "Rate limit exceeded"
+**Çözüm:**
+1. Ücretsiz tier: Günlük 14,400 requests limiti
+2. Limitin sıfırlanmasını bekle (her gün GMT 00:00'da)
+3. Veya ücretli tier'a geç
 
 ### Sorun: Build hatası
 **Çözüm:**
@@ -208,6 +225,12 @@ npm run build
 npm run build
 ```
 
+### Sorun: Çok yavaş yanıt
+**Çözüm:**
+1. Groq normalde çok hızlıdır (~1-2 saniye)
+2. Eğer yavaşsa, Groq status sayfasını kontrol et: [status.groq.com](https://status.groq.com)
+3. Cold start olabilir (ilk istek biraz yavaş, sonrakiler hızlı)
+
 ---
 
 ## 🎯 Production Checklist
@@ -215,22 +238,50 @@ npm run build
 Canlıya almadan önce:
 - [ ] Local'de test edildi (`npm run dev`)
 - [ ] Build başarılı (`npm run build`)
-- [ ] DeepSeek API key alındı
+- [ ] Groq API key alındı
 - [ ] Vercel hesabı oluşturuldu
-- [ ] Environment variables ayarlandı
+- [ ] Environment variables ayarlandı (`GROQ_API_KEY`)
 - [ ] İlk deployment başarılı
 - [ ] Canlıda arama testi yapıldı
+- [ ] Yanıt hızı kontrol edildi (1-2 saniye olmalı)
 - [ ] Mobile responsive kontrol edildi
 - [ ] Performance test edildi
 
 ---
 
-## 📞 Yardım
+## ⚡ Performans İpuçları
 
-- **Vercel Docs:** https://vercel.com/docs
-- **DeepSeek Docs:** https://platform.deepseek.com/docs
-- **MedMind Issues:** GitHub Issues kullan
+1. **Cold Start Minimize**:
+   - Vercel'de "Always-On" özelliğini etkinleştir (ücretli plan)
+   - Veya sık kullanım ile warm tutun
+
+2. **Rate Limit Yönetimi**:
+   - Ücretsiz tier: Günlük 14,400 requests
+   - Kullanıcı başına rate limiting ekle
+   - Cache mekanizması düşün (sık aranan konular için)
+
+3. **Token Optimizasyonu**:
+   - Prompt'u kısa tut
+   - Gereksiz detayları çıkar
+   - max_tokens'i optimize et
 
 ---
 
-**Başarılar!** 🎓✨
+## 📞 Yardım
+
+- **Groq Docs**: https://console.groq.com/docs
+- **Groq Status**: https://status.groq.com
+- **Vercel Docs**: https://vercel.com/docs
+- **MedMind Issues**: GitHub Issues kullan
+
+---
+
+## 🎓 Groq Hakkında
+
+Groq, **dünyanın en hızlı inference sağlayıcısıdır**:
+- ⚡ LPU (Language Processing Unit) teknolojisi
+- 🚀 ~300-500 token/saniye hız
+- 💰 Cömert ücretsiz tier (günlük 14,400 requests)
+- 🤖 En son modeller (Llama 3.3, Mixtral, vb.)
+
+**Başarılar!** 🎉✨

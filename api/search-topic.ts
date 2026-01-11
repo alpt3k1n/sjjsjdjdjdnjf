@@ -1,11 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-interface DeepSeekMessage {
+interface GroqMessage {
   role: 'system' | 'user' | 'assistant';
   content: string;
 }
 
-interface DeepSeekResponse {
+interface GroqResponse {
   choices: Array<{
     message: {
       content: string;
@@ -41,10 +41,10 @@ export default async function handler(
     return res.status(400).json({ error: 'Query parameter is required' });
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    console.error('DEEPSEEK_API_KEY environment variable is not set');
+    console.error('GROQ_API_KEY environment variable is not set');
     return res.status(500).json({ error: 'API key not configured' });
   }
 
@@ -122,34 +122,34 @@ KURALLAR:
 - Sadece JSON yanıtı ver, başka metin yok`;
 
   try {
-    const messages: DeepSeekMessage[] = [
+    const messages: GroqMessage[] = [
       {
         role: 'user',
         content: prompt,
       },
     ];
 
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model: 'llama-3.3-70b-versatile',
         messages,
         temperature: 0.7,
-        max_tokens: 4096,
+        max_tokens: 8192, // Groq llama-3.3 için max
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('DeepSeek API error:', response.status, errorText);
-      throw new Error(`DeepSeek API error: ${response.status}`);
+      console.error('Groq API error:', response.status, errorText);
+      throw new Error(`Groq API error: ${response.status}`);
     }
 
-    const data: DeepSeekResponse = await response.json();
+    const data: GroqResponse = await response.json();
     const content = data.choices[0]?.message?.content || '';
 
     // JSON'u çıkar
